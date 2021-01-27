@@ -1,0 +1,11 @@
+<?php
+$styleHtml     = $this->getStylesHtml() . $block->getCustomCss();
+$html          = $this->getElementsHtml();
+$customClasses = $this->getCustomClasses() ? ' ' . $this->getCustomClasses() : '';
+?>
+<?php if (trim($html)) { ?>
+<div class="magezon-builder magezon-builder-preload<?= $customClasses ?>">
+	<?= $html ?>
+</div>
+<?php if ($styleHtml) { ?><style class="magezon-builder-style"><?= $styleHtml ?></style><?php } ?>
+<?php } ?>
