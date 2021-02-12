@@ -1,0 +1,84 @@
+<?php
+
+
+namespace Elogic\OptionsVisibleConfig\Model\Entity\Attribute\Source;
+
+use Magento\Eav\Model\Entity\Attribute\Source\Table;
+use Magento\Framework\App\ObjectManager;
+use Magento\Store\Model\StoreManagerInterface;
+
+class TableOverride extends Table
+{
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
+     * Retrieve Full Option values array
+     *
+     * @param bool $withEmpty       Add empty option to array
+     * @param bool $defaultValues
+     * @return array
+     */
+    public function getAllOptions($withEmpty = true, $defaultValues = false)
+    {
+        $storeId = $this->getAttribute()->getStoreId();
+        if ($storeId === null) {
+            $storeId = $this->getStoreManager()->getStore()->getId();
+        }
+        if (!is_array($this->_options)) {
+            $this->_options = [];
+        }
+        if (!is_array($this->_optionsDefault)) {
+            $this->_optionsDefault = [];
+        }
+        $attributeId = $this->getAttribute()->getId();
+        if (!isset($this->_options[$storeId][$attributeId])) {
+            $collection = $this->_attrOptionCollectionFactory->create()->setPositionOrder(
+                'asc'
+            )->setAttributeFilter(
+                $attributeId
+            )->setStoreFilter(
+                $storeId
+            )->addFilter('visible',1)
+            ->load();
+            $this->_options[$storeId][$attributeId] = $collection->toOptionArray();
+            $this->_optionsDefault[$storeId][$attributeId] = $collection->toOptionArray('default_value');
+        }
+        $options = $defaultValues
+            ? $this->_optionsDefault[$storeId][$attributeId]
+            : $this->_options[$storeId][$attributeId];
+        if ($withEmpty) {
+            $options = $this->addEmptyOption($options);
+        }
+
+        return $options;
+    }
+
+    /**
+     * Add an empty option to the array
+     *
+     * @param array $options
+     * @return array
+     */
+    private function addEmptyOption(array $options)
+    {
+        array_unshift($options, ['label' => ' ', 'value' => '']);
+        return $options;
+    }
+
+    /**
+     * Get StoreManager dependency
+     *
+     * @return StoreManagerInterface
+     * @deprecated 100.1.6
+     */
+    private function getStoreManager()
+    {
+        if ($this->storeManager === null) {
+            $this->storeManager = ObjectManager::getInstance()->get(StoreManagerInterface::class);
+        }
+        return $this->storeManager;
+    }
+}

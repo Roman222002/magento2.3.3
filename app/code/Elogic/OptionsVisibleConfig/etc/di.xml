@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Catalog\Controller\Adminhtml\Product\Attribute\Save">
+        <plugin name="beforeAttributeSavePlugin" type="Elogic\OptionsVisibleConfig\Plugin\Controller\Adminhtml\Product\Attribute\SavePlugin" sortOrder="1" disabled="false"/>
+    </type>
+
+    <preference for="Magento\Eav\Model\Entity\Attribute\Source\Table" type="Elogic\OptionsVisibleConfig\Model\Entity\Attribute\Source\TableOverride" />
+
+     <preference for="Magento\Eav\Block\Adminhtml\Attribute\Edit\Options\Options" type="Elogic\OptionsVisibleConfig\Block\Adminhtml\Attribute\Edit\Options\OptionsOverride" />
+</config>
